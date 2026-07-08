@@ -1,0 +1,2093 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora Más Nómina | Consubanco – RANMA Protección Integral</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  :root {
+    --csb-blue: #1a3e6e;
+    --csb-blue-mid: #2358a0;
+    --csb-blue-light: #4a7fc1;
+    --csb-orange: #f47920;
+    --csb-orange-light: #f9a55a;
+    --ranma-green: #4a8c2a;
+    --ranma-blue: #2e6da4;
+    --gold: #c9a84c;
+    --teal: #0b7a75;
+    --bg: #f0f4f8;
+    --card: #ffffff;
+    --text: #1a2233;
+    --muted: #6b7a8d;
+    --border: #d1dde9;
+    --success: #2a7a4e;
+    --warning: #c75000;
+    --radius: 14px;
+    --shadow: 0 4px 24px rgba(26,62,110,0.10);
+    --shadow-lg: 0 8px 40px rgba(26,62,110,0.16);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Open Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: linear-gradient(135deg, var(--csb-blue) 0%, var(--csb-blue-mid) 60%, #1e4f8a 100%);
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 22px 28px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
+  }
+  .header-brand { display: flex; align-items: center; gap: 18px; }
+  .header-logo-csb {
+    width: 56px; height: 56px;
+    background: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+    color: var(--csb-blue);
+    letter-spacing: -1px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+    flex-shrink: 0;
+    border: 3px solid var(--csb-orange);
+  }
+  .header-title h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 22px; font-weight: 800;
+    color: #fff;
+    line-height: 1.1;
+  }
+  .header-title p {
+    font-size: 12px; color: rgba(255,255,255,0.75);
+    font-weight: 500; margin-top: 3px;
+    letter-spacing: 0.5px;
+  }
+  .header-logos {
+    display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+  }
+  .header-logo-badge {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.9);
+    font-weight: 600;
+    font-family: 'Montserrat', sans-serif;
+    letter-spacing: 0.3px;
+    backdrop-filter: blur(4px);
+  }
+  .header-logo-badge.orange {
+    background: var(--csb-orange);
+    border-color: var(--csb-orange-light);
+    color: white;
+  }
+
+  /* ── PROMO BANNER ── */
+  .promo-banner {
+    background: linear-gradient(90deg, var(--csb-orange) 0%, #e06010 100%);
+    text-align: center;
+    padding: 8px 20px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: white;
+    letter-spacing: 0.4px;
+  }
+  .promo-banner span {
+    background: rgba(255,255,255,0.2);
+    border-radius: 4px;
+    padding: 2px 8px;
+    margin: 0 4px;
+  }
+
+  /* ── MAIN LAYOUT ── */
+  .main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 28px 20px 40px;
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 24px;
+    align-items: start;
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .card-header {
+    background: linear-gradient(135deg, var(--csb-blue) 0%, var(--csb-blue-mid) 100%);
+    padding: 14px 20px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .card-header .icon {
+    width: 32px; height: 32px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+  .card-header h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px; font-weight: 700;
+    color: white;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .card-body { padding: 20px; }
+
+  /* ── SECTION LABELS ── */
+  .section-label {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px; font-weight: 700;
+    color: var(--csb-blue-mid);
+    text-transform: uppercase; letter-spacing: 1px;
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--border);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .section-label::before {
+    content: '';
+    width: 3px; height: 14px;
+    background: var(--csb-orange);
+    border-radius: 2px;
+    display: inline-block;
+  }
+
+  /* ── FORM FIELDS ── */
+  .field { margin-bottom: 16px; }
+  .field label {
+    display: block;
+    font-size: 12px; font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 6px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .field label .req { color: var(--csb-orange); }
+  .input-wrap { position: relative; }
+  .input-prefix, .input-suffix {
+    position: absolute;
+    top: 50%; transform: translateY(-50%);
+    font-size: 14px; font-weight: 700;
+    color: var(--csb-blue-mid);
+    pointer-events: none;
+  }
+  .input-prefix { left: 12px; }
+  .input-suffix { right: 12px; }
+  input[type="text"], input[type="number"], select {
+    width: 100%;
+    padding: 11px 14px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    font-size: 15px; font-weight: 600;
+    color: var(--text);
+    font-family: 'Montserrat', sans-serif;
+    background: #fafcff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none; appearance: none;
+  }
+  input[type="text"]:focus, input[type="number"]:focus, select:focus {
+    outline: none;
+    border-color: var(--csb-blue-light);
+    box-shadow: 0 0 0 3px rgba(74,127,193,0.15);
+    background: white;
+  }
+  .has-prefix input { padding-left: 28px; }
+  .has-suffix input { padding-right: 36px; }
+  select { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%232358a0' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 34px; }
+
+  .field-hint {
+    font-size: 11px; color: var(--muted);
+    margin-top: 4px;
+  }
+  .field-error {
+    font-size: 11px; color: var(--warning);
+    margin-top: 4px; display: none;
+    font-weight: 600;
+  }
+  .field.error input, .field.error select {
+    border-color: var(--warning);
+    background: #fff8f5;
+  }
+  .field.error .field-error { display: block; }
+
+  /* ── SLIDER ── */
+  .slider-wrap { margin-top: 6px; }
+  input[type="range"] {
+    -webkit-appearance: none; appearance: none;
+    width: 100%; height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(to right, var(--csb-blue-light) 0%, var(--csb-blue-light) var(--pct, 0%), var(--border) var(--pct, 0%), var(--border) 100%);
+    outline: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--csb-blue-mid);
+    border: 3px solid white;
+    box-shadow: 0 2px 8px rgba(26,62,110,0.35);
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+  input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+  .slider-labels {
+    display: flex; justify-content: space-between;
+    font-size: 11px; color: var(--muted); margin-top: 5px;
+  }
+
+  /* ── 2-COL GRID ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+  /* ── RESULT CARDS ── */
+  .result-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .result-item {
+    background: linear-gradient(135deg, #f0f6ff 0%, #e8f0fb 100%);
+    border: 1px solid #c8daf4;
+    border-radius: 10px;
+    padding: 14px 16px;
+    text-align: center;
+    transition: transform 0.15s;
+  }
+  .result-item:hover { transform: translateY(-2px); }
+  .result-item.highlight {
+    background: linear-gradient(135deg, var(--csb-blue) 0%, var(--csb-blue-mid) 100%);
+    border-color: var(--csb-blue);
+    grid-column: span 2;
+  }
+  .result-item .val {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 26px; font-weight: 800;
+    color: var(--csb-blue-mid);
+    line-height: 1.1;
+  }
+  .result-item.highlight .val { color: white; font-size: 32px; }
+  .result-item .lbl {
+    font-size: 11px; font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.5px;
+    margin-top: 4px;
+  }
+  .result-item.highlight .lbl { color: rgba(255,255,255,0.75); }
+  .result-item .sub {
+    font-size: 11px; color: var(--muted); margin-top: 2px;
+  }
+  .result-item.highlight .sub { color: rgba(255,255,255,0.6); }
+
+  /* ── CTA BUTTON ── */
+  .btn-calc {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--csb-orange) 0%, #e06010 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 15px; font-weight: 800;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 4px 16px rgba(244,121,32,0.35);
+    text-transform: uppercase;
+    margin-top: 6px;
+  }
+  .btn-calc:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(244,121,32,0.5);
+  }
+  .btn-calc:active { transform: translateY(0); }
+
+  .btn-secondary {
+    width: 100%;
+    padding: 10px;
+    background: transparent;
+    color: var(--csb-blue-mid);
+    border: 2px solid var(--csb-blue-light);
+    border-radius: 8px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px; font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-top: 8px;
+    text-transform: uppercase; letter-spacing: 0.3px;
+  }
+  .btn-secondary:hover {
+    background: var(--csb-blue);
+    border-color: var(--csb-blue);
+    color: white;
+  }
+
+  /* ── CAPACIDAD BAR ── */
+  .cap-bar-wrap { margin-top: 10px; }
+  .cap-bar-label {
+    display: flex; justify-content: space-between;
+    font-size: 12px; font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .cap-bar-outer {
+    height: 10px; background: var(--border);
+    border-radius: 5px; overflow: hidden;
+  }
+  .cap-bar-inner {
+    height: 100%; border-radius: 5px;
+    background: linear-gradient(90deg, var(--ranma-green) 0%, #6bbf44 100%);
+    transition: width 0.6s cubic-bezier(.4,0,.2,1);
+    width: 0%;
+  }
+  .cap-bar-inner.warning { background: linear-gradient(90deg, #e09800 0%, #f4c842 100%); }
+  .cap-bar-inner.danger { background: linear-gradient(90deg, var(--warning) 0%, #e05030 100%); }
+
+  /* ── AMORTIZACIÓN TABLE ── */
+  .amort-wrap {
+    max-height: 320px; overflow-y: auto;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    margin-top: 8px;
+  }
+  .amort-wrap::-webkit-scrollbar { width: 6px; }
+  .amort-wrap::-webkit-scrollbar-track { background: #f0f4f8; }
+  .amort-wrap::-webkit-scrollbar-thumb { background: var(--csb-blue-light); border-radius: 3px; }
+  table {
+    width: 100%; border-collapse: collapse;
+    font-size: 12px;
+  }
+  thead th {
+    background: var(--csb-blue);
+    color: white;
+    padding: 9px 10px;
+    text-align: right;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.3px;
+    position: sticky; top: 0; z-index: 2;
+  }
+  thead th:first-child { text-align: center; }
+  tbody tr:nth-child(even) td { background: #f4f8ff; }
+  tbody tr:hover td { background: #e8f0fb; }
+  td {
+    padding: 7px 10px;
+    text-align: right;
+    border-bottom: 1px solid #edf1f7;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+  }
+  td:first-child { text-align: center; font-weight: 700; color: var(--csb-blue-mid); }
+  .td-green { color: var(--success); font-weight: 700; }
+  .td-red { color: var(--warning); }
+
+  /* ── INFO CARD (derecho) ── */
+  .info-strip {
+    background: linear-gradient(135deg, #f7f9ff 0%, #eef3fc 100%);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+  }
+  .info-strip-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px; font-weight: 700;
+    color: var(--csb-blue);
+    margin-bottom: 10px;
+    text-transform: uppercase; letter-spacing: 0.4px;
+  }
+  .info-row {
+    display: flex; justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .info-row:last-child { border-bottom: none; }
+  .info-row .info-key { color: var(--muted); font-weight: 500; }
+  .info-row .info-val {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700; color: var(--csb-blue-mid);
+  }
+
+  /* ── VIDA MÁS CARD ── */
+  .vida-card {
+    background: linear-gradient(135deg, #0b5c38 0%, #1a7a50 100%);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow);
+  }
+  .vida-card-top {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 14px;
+  }
+  .vida-icon {
+    width: 44px; height: 44px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .vida-title h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px; font-weight: 800;
+    color: white;
+  }
+  .vida-title p {
+    font-size: 11px; color: rgba(255,255,255,0.7);
+    margin-top: 2px;
+  }
+  .vida-benefit {
+    display: flex; align-items: flex-start; gap: 8px;
+    margin-bottom: 8px;
+    font-size: 12px; color: rgba(255,255,255,0.9);
+    line-height: 1.4;
+  }
+  .vida-benefit::before {
+    content: '✓';
+    width: 18px; height: 18px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 800;
+    flex-shrink: 0;
+    color: #a8e6c8;
+    line-height: 18px;
+    text-align: center;
+  }
+  .vida-costo {
+    background: rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-top: 12px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .vida-costo span { font-size: 12px; color: rgba(255,255,255,0.8); }
+  .vida-costo strong {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 18px; font-weight: 800;
+    color: white;
+  }
+
+  /* ── ALERT ── */
+  .alert {
+    background: #fff8e6;
+    border: 1px solid #f4c842;
+    border-left: 4px solid var(--csb-orange);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: #7a4800;
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+  .alert strong { font-weight: 700; }
+
+  /* ── FOOTER ── */
+  .footer {
+    background: var(--csb-blue);
+    text-align: center;
+    padding: 16px 20px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.7;
+    max-width: 100%;
+  }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--muted);
+  }
+  .empty-state .big-icon { font-size: 48px; margin-bottom: 12px; }
+  .empty-state p { font-size: 14px; }
+
+  /* ── TABS ── */
+  .tabs { display: flex; gap: 4px; margin-bottom: 16px; }
+  .tab-btn {
+    flex: 1; padding: 9px 6px;
+    background: var(--border);
+    border: none;
+    border-radius: 8px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px; font-weight: 700;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    text-transform: uppercase; letter-spacing: 0.3px;
+  }
+  .tab-btn.active {
+    background: var(--csb-blue-mid);
+    color: white;
+    box-shadow: 0 2px 8px rgba(35,88,160,0.3);
+  }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 800px) {
+    .main { grid-template-columns: 1fr; }
+    .header-logos { display: none; }
+    .result-grid { grid-template-columns: 1fr 1fr; }
+    .grid-3 { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 480px) {
+    .header-inner { padding: 16px; }
+    .result-item .val { font-size: 20px; }
+    .result-item.highlight .val { font-size: 26px; }
+    .grid-2 { grid-template-columns: 1fr; }
+  }
+
+  /* ── ANTICIPO MODO ── */
+  .anticipo-modo-btn {
+    flex: 1; padding: 9px 8px;
+    background: var(--border);
+    border: 2px solid transparent;
+    border-radius: 8px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px; font-weight: 700;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+  }
+  .anticipo-modo-btn.active {
+    background: white;
+    border-color: var(--csb-blue-light);
+    color: var(--csb-blue-mid);
+    box-shadow: 0 2px 8px rgba(35,88,160,0.15);
+  }
+  .anticipo-explicacion {
+    background: #f0f6ff;
+    border-left: 3px solid var(--csb-blue-light);
+    border-radius: 0 6px 6px 0;
+    padding: 8px 12px;
+    font-size: 12px;
+    color: var(--csb-blue);
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+
+  /* ── HIGHLIGHT ROW ── */
+  .tr-abono td { background: #fffbe6 !important; font-weight: 700; }
+  .tr-abono td.td-abono { color: #b85c00 !important; font-weight: 800; }
+
+  /* ── EXPORTAR ── */
+  .export-bar {
+    display: flex; align-items: center; gap: 8px;
+    margin-top: 12px; flex-wrap: wrap;
+  }
+  .export-label {
+    font-size: 11px; font-weight: 700;
+    color: var(--muted); text-transform: uppercase;
+    letter-spacing: 0.5px; margin-right: 2px;
+  }
+  .btn-export {
+    padding: 7px 14px;
+    border: none; border-radius: 7px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px; font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.12s, box-shadow 0.12s;
+    letter-spacing: 0.3px;
+  }
+  .btn-export:hover { transform: translateY(-1px); box-shadow: 0 3px 10px rgba(0,0,0,0.15); }
+  .btn-export:active { transform: translateY(0); }
+  .btn-csv  { background: #e8f5e8; color: #1a6b2a; border: 1px solid #a8dca8; }
+  .btn-xlsx { background: #e2f0e2; color: #155724; border: 1px solid #82c882; }
+  .btn-pdf  { background: #fde8d4; color: #7a3000; border: 1px solid #f4b87a; }
+
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animated { animation: fadeUp 0.4s ease both; }
+  .delay-1 { animation-delay: 0.05s; }
+  .delay-2 { animation-delay: 0.1s; }
+  .delay-3 { animation-delay: 0.15s; }
+
+  /* tag badge */
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.3px;
+    font-family: 'Montserrat', sans-serif;
+  }
+  .badge-green { background: #d4f0e0; color: var(--success); }
+  .badge-orange { background: #fde8d4; color: var(--csb-orange); }
+  .badge-blue { background: #dce8f8; color: var(--csb-blue-mid); }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div class="header-brand">
+      <div class="header-logo-csb">csb</div>
+      <div class="header-title">
+        <h1>Calculadora Más Nómina</h1>
+        <p>Pensionados IMSS · Ley 73 · Descuento vía nómina</p>
+      </div>
+    </div>
+    <div class="header-logos">
+      <div class="header-logo-badge orange">Más Nómina</div>
+      <div class="header-logo-badge">Consupago</div>
+      <div class="header-logo-badge">Opcipres</div>
+      <div class="header-logo-badge">RANMA</div>
+    </div>
+  </div>
+</div>
+
+<!-- PROMO BANNER -->
+<div class="promo-banner">
+  🎉 <span>¡PROMOCIÓN ESPECIAL!</span> Sin comisión por apertura · Autorización directa IMSS · Sin buró de crédito
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- COLUMNA IZQUIERDA -->
+  <div>
+
+    <!-- COTIZADOR -->
+    <div class="card animated" style="margin-bottom:24px;">
+      <div class="card-header">
+        <div class="icon">🧮</div>
+        <h2>Cotizador de Crédito</h2>
+      </div>
+      <div class="card-body">
+
+        <div class="section-label">Datos del Cliente</div>
+        <div class="grid-2">
+          <div class="field">
+            <label>Nombre del Cliente</label>
+            <input type="text" id="nombre" placeholder="Nombre completo" autocomplete="off">
+          </div>
+          <div class="field">
+            <label>Ejecutivo</label>
+            <input type="text" id="ejecutivo" value="EJECUTIVO RANMA" autocomplete="off">
+          </div>
+        </div>
+
+        <div class="section-label" style="margin-top:8px;">Parámetros del Crédito</div>
+
+        <!-- MONTO -->
+        <div class="field" id="field-monto">
+          <label>Monto a Financiar <span class="req">*</span></label>
+          <div class="input-wrap has-prefix has-suffix">
+            <span class="input-prefix">$</span>
+            <input type="number" id="monto" placeholder="10,000" min="1000" max="500000" step="1000" oninput="syncSlider()" value="">
+            <span class="input-suffix">MXN</span>
+          </div>
+          <div class="slider-wrap">
+            <input type="range" id="sliderMonto" min="1000" max="500000" step="1000" value="50000" oninput="syncMonto()">
+            <div class="slider-labels"><span>$1,000</span><span>$500,000</span></div>
+          </div>
+          <div class="field-hint">Monto a financiar · Máximo sujeto a capacidad SIPRE/SUAP y 8× pensión</div>
+          <div class="field-error" id="err-monto">Ingresa un monto válido</div>
+        </div>
+
+        <div class="grid-2">
+          <!-- PLAZO -->
+          <div class="field" id="field-plazo">
+            <label>Plazo <span class="req">*</span></label>
+            <div class="input-wrap">
+              <select id="plazo" onchange="calcular()">
+                <option value="">— Selecciona —</option>
+                <option value="12">12 meses (1 año)</option>
+                <option value="24">24 meses (2 años)</option>
+                <option value="36">36 meses (3 años)</option>
+                <option value="48">48 meses (4 años)</option>
+                <option value="60" selected>60 meses (5 años)</option>
+              </select>
+            </div>
+            <div class="field-error" id="err-plazo">Selecciona un plazo</div>
+          </div>
+
+          <!-- TASA -->
+          <div class="field">
+            <label>Producto</label>
+            <div class="input-wrap">
+              <select id="tipo" onchange="calcular()">
+                <option value="nuevo" selected>Más Nómina · Ley 73</option>
+                <option value="compra">Compra de Deuda</option>
+                <option value="jubilado">Jubilado</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- CAPACIDAD -->
+        <div class="field" id="field-cap">
+          <label>Capacidad SIPRE / SUAP <span class="req">*</span>
+            <span class="badge badge-blue" style="margin-left:6px;">Mensual disponible</span>
+          </label>
+          <div class="input-wrap has-prefix has-suffix">
+            <span class="input-prefix">$</span>
+            <input type="number" id="capacidad" placeholder="Descuento máximo permitido" min="0" step="10" oninput="calcular()">
+            <span class="input-suffix">MXN</span>
+          </div>
+          <div class="field-hint">Ingresa la capacidad de descuento mensual del pensionado</div>
+          <div class="cap-bar-wrap" id="capBarWrap" style="display:none;">
+            <div class="cap-bar-label">
+              <span id="capPctLabel" style="font-size:12px; color:var(--muted);">Uso de capacidad</span>
+              <span id="capPctVal" style="font-family:'Montserrat',sans-serif; font-weight:700; font-size:12px; color:var(--csb-blue-mid);">—</span>
+            </div>
+            <div class="cap-bar-outer"><div class="cap-bar-inner" id="capBar"></div></div>
+          </div>
+        </div>
+
+        <!-- SALDO OTRA FINANCIERA -->
+        <div class="field">
+          <label>Saldo en otra financiera
+            <span class="badge badge-orange" style="margin-left:6px;">Compra de deuda</span>
+          </label>
+          <div class="input-wrap has-prefix has-suffix">
+            <span class="input-prefix">$</span>
+            <input type="number" id="saldoOtra" placeholder="0 si no aplica" min="0" step="1000" value="" oninput="calcular()">
+            <span class="input-suffix">MXN</span>
+          </div>
+          <div class="field-hint">Deja en 0 si es crédito nuevo sin compra de deuda</div>
+        </div>
+
+        <button class="btn-calc" onclick="calcular()">⚡ Calcular mi Crédito</button>
+        <button class="btn-secondary" onclick="limpiar()">↺ Limpiar / Nueva Cotización</button>
+
+      </div>
+    </div>
+
+    <!-- RESULTADOS -->
+    <div class="card animated delay-1" id="resultSection" style="margin-bottom:24px; display:none;">
+      <div class="card-header">
+        <div class="icon">📊</div>
+        <h2>Resumen del Crédito</h2>
+      </div>
+      <div class="card-body">
+
+        <div class="result-grid" id="resultGrid">
+          <!-- filled by JS -->
+        </div>
+
+        <!-- BARRA CAPACIDAD -->
+        <div id="capResumenWrap" style="margin-bottom:16px;"></div>
+
+        <!-- INFO STRIP -->
+        <div class="info-strip">
+          <div class="info-strip-title">💡 Información del Crédito</div>
+          <div class="info-row">
+            <span class="info-key">Fecha de elaboración</span>
+            <span class="info-val" id="resFecha">—</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">Cliente</span>
+            <span class="info-val" id="resNombre">—</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">Ejecutivo</span>
+            <span class="info-val" id="resEjecutivo">—</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">Intereses diarios</span>
+            <span class="info-val" id="resIntDiarios">—</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">Tasa nominal anual</span>
+            <span class="info-val" id="resTasa">—</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">CAT (SIPRE)</span>
+            <span class="info-val" id="resCAT">—</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">Comisión por apertura</span>
+            <span class="info-val" style="color:var(--success);">$0 — Sin comisión ✓</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">Garantía / Aval</span>
+            <span class="info-val" style="color:var(--success);">No requerida ✓</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">Buró de crédito</span>
+            <span class="info-val" style="color:var(--success);">No se consulta ✓</span>
+          </div>
+        </div>
+
+        <!-- ALERTA SALDO INSOLUTO -->
+        <div class="alert" id="alertSaldoInsoluto" style="display:none;">
+          <strong>⚠️ Saldos insolutos:</strong> El crédito incluye liquidación de adeudo con otra financiera.
+          El monto neto a depositar al cliente se calculará descontando dicho saldo.
+        </div>
+
+        <!-- TABS AMORT -->
+        <div class="tabs">
+          <button class="tab-btn active" onclick="showTab('tabAmort', this)">📋 Sin abono extra</button>
+          <button class="tab-btn" onclick="showTab('tabAnticipo', this)">💰 Con abono anticipado</button>
+        </div>
+
+        <!-- TAB: TABLA NORMAL -->
+        <div class="tab-content active" id="tabAmort">
+          <div class="amort-wrap">
+            <table id="amortTable">
+              <thead>
+                <tr>
+                  <th style="text-align:center;">#</th>
+                  <th>Saldo Inicial</th>
+                  <th>Pago Mensual</th>
+                  <th>Interés</th>
+                  <th>IVA Int.</th>
+                  <th>Capital</th>
+                  <th>Saldo Final</th>
+                </tr>
+              </thead>
+              <tbody id="amortBody"></tbody>
+            </table>
+          </div>
+          <div id="amortTotales" style="margin-top:10px;"></div>
+          <!-- EXPORTAR TABLA NORMAL -->
+          <div class="export-bar">
+            <span class="export-label">Exportar tabla:</span>
+            <button class="btn-export btn-csv"  onclick="exportarCSV('normal')">⬇ CSV</button>
+            <button class="btn-export btn-xlsx" onclick="exportarXLSX('normal')">⬇ Excel</button>
+            <button class="btn-export btn-pdf"  onclick="exportarPDF('normal')">🖨 PDF / Imprimir</button>
+          </div>
+        </div>
+
+        <!-- TAB: ABONO ANTICIPADO -->
+        <div class="tab-content" id="tabAnticipo">
+
+          <!-- Selector de modalidad -->
+          <div style="display:flex;gap:6px;margin:12px 0 14px;flex-wrap:wrap;">
+            <button class="anticipo-modo-btn active" id="btnModoUnico"      onclick="setModoAnticipo('unico')">🎯 Abono único</button>
+            <button class="anticipo-modo-btn"        id="btnModoMensual"    onclick="setModoAnticipo('mensual')">📅 Mensual</button>
+            <button class="anticipo-modo-btn"        id="btnModoBimestral"  onclick="setModoAnticipo('bimestral')">📆 Bimestral</button>
+            <button class="anticipo-modo-btn"        id="btnModoTrimestral" onclick="setModoAnticipo('trimestral')">🗓️ Trimestral</button>
+          </div>
+
+          <!-- Explicaciones -->
+          <div id="explicacionUnico"      class="anticipo-explicacion">Abono extra a capital en un mes específico. El resto del crédito sigue con el pago normal.</div>
+          <div id="explicacionMensual"    class="anticipo-explicacion" style="display:none;">A partir del mes 2 se abona una cantidad adicional al capital cada mes.</div>
+          <div id="explicacionBimestral"  class="anticipo-explicacion" style="display:none;">A partir del mes 2 se hace un abono extra al capital cada dos meses (meses 2, 4, 6, 8…).</div>
+          <div id="explicacionTrimestral" class="anticipo-explicacion" style="display:none;">A partir del mes 3 se hace un abono extra al capital cada tres meses (meses 3, 6, 9, 12…).</div>
+
+          <!-- Inputs principales -->
+          <div class="grid-2" style="margin-bottom:4px;">
+            <div class="field" id="campoMesAbono">
+              <label>¿En qué mes se hace el abono?</label>
+              <div class="input-wrap">
+                <input type="number" id="mesAbono" placeholder="Ej. 1" min="1" step="1" value="1" oninput="calcularAnticipo()">
+              </div>
+              <div class="field-hint">Mes 1 = primer pago</div>
+            </div>
+            <div class="field">
+              <label id="labelMontoAbono">Monto del abono a capital</label>
+              <div class="input-wrap has-prefix has-suffix">
+                <span class="input-prefix">$</span>
+                <input type="number" id="anticipoMonto" placeholder="0" min="0" step="500" oninput="calcularAnticipo()">
+                <span class="input-suffix">MXN</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- AGUINALDO DICIEMBRE -->
+          <div class="field" id="campoAguinaldo" style="display:none;">
+            <label>Abono de aguinaldo en diciembre
+              <span class="badge badge-orange" style="margin-left:6px;">Opcional · cada año</span>
+            </label>
+            <div class="input-wrap has-prefix has-suffix">
+              <span class="input-prefix">$</span>
+              <input type="number" id="aguinaldoMonto" placeholder="0 si no aplica" min="0" step="500" oninput="calcularAnticipo()">
+              <span class="input-suffix">MXN</span>
+            </div>
+            <div class="field-hint">Se aplica en los meses 12, 24, 36… del crédito (diciembre de cada año)</div>
+          </div>
+
+          <!-- Resumen y tabla -->
+          <div id="anticipoResumen" style="margin:10px 0;"></div>
+
+          <div id="anticipoTablaWrap" style="display:none;">
+            <div style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;color:var(--csb-blue-mid);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">
+              Tabla de amortización con abono anticipado
+            </div>
+            <div class="amort-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th style="text-align:center;">#</th>
+                    <th>Saldo Inicial</th>
+                    <th>Pago Normal</th>
+                    <th>Abono Extra</th>
+                    <th>Interés</th>
+                    <th>IVA Int.</th>
+                    <th>Capital</th>
+                    <th>Saldo Final</th>
+                  </tr>
+                </thead>
+                <tbody id="anticipoAmortBody"></tbody>
+              </table>
+            </div>
+            <div id="anticipoTotales" style="margin-top:10px;"></div>
+            <!-- EXPORTAR TABLA CON ABONO -->
+            <div class="export-bar">
+              <span class="export-label">Exportar tabla:</span>
+              <button class="btn-export btn-csv"  onclick="exportarCSV('anticipo')">⬇ CSV</button>
+              <button class="btn-export btn-xlsx" onclick="exportarXLSX('anticipo')">⬇ Excel</button>
+              <button class="btn-export btn-pdf"  onclick="exportarPDF('anticipo')">🖨 PDF / Imprimir</button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- COLUMNA DERECHA -->
+  <div>
+
+    <!-- CAPACIDAD MIN -->
+    <div class="card animated delay-1" style="margin-bottom:14px;">
+      <div class="card-header">
+        <div class="icon">📐</div>
+        <h2>Capacidad Mínima</h2>
+      </div>
+      <div class="card-body">
+        <div class="section-label">¿Cuánto necesita el cliente?</div>
+
+        <div class="grid-2">
+          <div class="field">
+            <label>Tasa a usar</label>
+            <select id="capTipo" onchange="calcularCapMinima()">
+              <option value="nuevo">Más Nómina · Ley 73</option>
+              <option value="compra">Compra de Deuda</option>
+              <option value="jubilado">Jubilado</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Plazo</label>
+            <select id="capPlazo" onchange="calcularCapMinima()">
+              <option value="12">12 meses</option>
+              <option value="24">24 meses</option>
+              <option value="36">36 meses</option>
+              <option value="48">48 meses</option>
+              <option value="60" selected>60 meses</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- PENSIÓN → 8× -->
+        <div class="field">
+          <label>Pensión mensual del cliente
+            <span class="badge badge-green" style="margin-left:6px;">Monto máx = 8×</span>
+          </label>
+          <div class="input-wrap has-prefix has-suffix">
+            <span class="input-prefix">$</span>
+            <input type="number" id="pensionMensual" placeholder="Ej. 10,000" min="0" step="100"
+                   oninput="sincronizarPension()">
+            <span class="input-suffix">MXN</span>
+          </div>
+          <div class="field-hint">El monto máximo a prestar es 8 veces la pensión mensual</div>
+        </div>
+
+        <div class="field">
+          <label>Capacidad disponible (SIPRE/SUAP)</label>
+          <div class="input-wrap has-prefix has-suffix">
+            <span class="input-prefix">$</span>
+            <input type="number" id="capDisp" placeholder="Ej. 2,500" min="0" step="50" oninput="calcularCapMinima()">
+            <span class="input-suffix">MXN</span>
+          </div>
+        </div>
+
+        <div id="capMinimaResult">
+          <div class="empty-state">
+            <div class="big-icon">📐</div>
+            <p>Ingresa la capacidad disponible<br>para ver el monto máximo prestable</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIDA MÁS -->
+    <div class="vida-card animated delay-2">
+      <div class="vida-card-top">
+        <div class="vida-icon">🛡️</div>
+        <div class="vida-title">
+          <h3>Vida Más · GNP Seguros</h3>
+          <p>Seguro de vida para pensionados IMSS</p>
+        </div>
+      </div>
+
+      <div class="vida-benefit"><strong>Cobertura básica por fallecimiento:</strong> se paga la Suma Asegurada contratada a los beneficiarios</div>
+      <div class="vida-benefit"><strong>Anticipo de Suma Asegurada</strong> por enfermedad en fase terminal (infarto masivo, cáncer, hemorragia cerebral, insuficiencia renal)</div>
+      <div class="vida-benefit"><strong>Servicios y asistencia funeraria:</strong> asesoría telefónica, traslado del cuerpo, gestión de trámites, ataúd o cremación, capilla de velación, urna, arreglo estético y segundo traslado (o reembolso de gastos)</div>
+      <div class="vida-benefit"><strong>Asistencia médica 24/7:</strong> ambulancia (2 eventos), orientación médica telefónica, apoyo psicológico telefónico, orientación nutricional telefónica y asistencia médica a domicilio (costo adicional)</div>
+
+      <div class="vida-costo">
+        <span>Costo de la póliza</span>
+        <div>
+          <strong id="vidaCosto">$400.00 / mes</strong>
+          <div style="font-size:10px; color:rgba(255,255,255,0.6); text-align:right;" id="vidaNote">Cuota fija mensual · Seguro Vida + GNP</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CATÁLOGO DE TASAS -->
+    <div class="card animated delay-3" style="margin-top:14px;">
+      <div class="card-header">
+        <div class="icon">📋</div>
+        <h2>Catálogo de Tasas</h2>
+      </div>
+      <div class="card-body">
+        <table style="font-size:11px;">
+          <thead>
+            <tr>
+              <th style="text-align:left;">Tipo</th>
+              <th>Plazo</th>
+              <th>Tasa Nom.</th>
+              <th>CAT</th>
+            </tr>
+          </thead>
+          <tbody id="catalogoBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  Información mostrada para fines de comparación · Representa cifras aproximadas basadas en los pagos mensuales indicados · No constituye oferta vinculante<br>
+  Todo crédito está sujeto a autorización directa por el IMSS · Descuentos vía nómina · Sin buró de crédito · Sin garantías ni avales · RANMA Protección Integral · Más Nómina · Consubanco
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+//  CATÁLOGO DE TASAS (Consubanco Ley 73)
+//  Tasas nominales anuales (aproximadas)
+// ══════════════════════════════════════════════
+// ══════════════════════════════════════════════
+//  CATÁLOGO DE TASAS (Más Nómina · Consubanco Ley 73)
+//  Tasa mensual: 2.65% · Tasa anual: 31.89% · CAT c/IVA (SIPRE): 43.96%
+// ══════════════════════════════════════════════
+const CATALOGO = {
+  nuevo: {
+    12: { tasa: 0.3189, cat: 0.4396 },
+    24: { tasa: 0.3189, cat: 0.4396 },
+    36: { tasa: 0.3189, cat: 0.4396 },
+    48: { tasa: 0.3189, cat: 0.4396 },
+    60: { tasa: 0.3189, cat: 0.4396 },
+  },
+  compra: {
+    12: { tasa: 0.3189, cat: 0.4396 },
+    24: { tasa: 0.3189, cat: 0.4396 },
+    36: { tasa: 0.3189, cat: 0.4396 },
+    48: { tasa: 0.3189, cat: 0.4396 },
+    60: { tasa: 0.3189, cat: 0.4396 },
+  },
+  jubilado: {
+    12: { tasa: 0.3189, cat: 0.4396 },
+    24: { tasa: 0.3189, cat: 0.4396 },
+    36: { tasa: 0.3189, cat: 0.4396 },
+    48: { tasa: 0.3189, cat: 0.4396 },
+    60: { tasa: 0.3189, cat: 0.4396 },
+  }
+};
+const IVA = 0.16;
+
+// ══════════════════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════════════════
+function fmt(n) {
+  if (n === null || n === undefined || isNaN(n)) return '—';
+  return '$' + n.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+function fmtPct(n) {
+  return (n * 100).toFixed(2) + '%';
+}
+function fmtDate() {
+  return new Date().toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' });
+}
+
+// ─────────────────────────────────────────────
+//  calcPago — pago mensual FIJO exacto
+//
+//  Metodología: bisección numérica.
+//  El IVA se cobra solo sobre los INTERESES de cada período (no sobre capital),
+//  por lo que no existe fórmula cerrada perfecta para un pago fijo.
+//  Buscamos P tal que el saldo al mes n sea exactamente 0.
+//
+//  Nota: NO se usa tmIva en el exponente del factor de anualidad —
+//  ese error inflaría el pago artificialmente.
+// ─────────────────────────────────────────────
+function _saldoFinal(monto, tm, n, P) {
+  let saldo = monto;
+  for (let i = 0; i < n; i++) {
+    const interes = saldo * tm;
+    const iva     = interes * IVA;
+    saldo -= (P - interes - iva);   // abono a capital
+  }
+  return saldo;
+}
+
+function calcPago(monto, tasaAnual, n) {
+  if (monto <= 0 || n <= 0) return 0;
+  const tm = tasaAnual / 12;
+  if (tm === 0) return monto / n;
+
+  // Cotas: pago sin IVA (insuficiente) — pago con IVA sobre monto completo (excesivo)
+  let lo = monto * tm / (1 - Math.pow(1 + tm, -n));
+  let hi = lo * (1 + IVA);
+
+  for (let i = 0; i < 60; i++) {
+    const mid = (lo + hi) / 2;
+    const sf  = _saldoFinal(monto, tm, n, mid);
+    if (Math.abs(sf) < 0.001) return mid;
+    if (sf > 0) lo = mid;   // pago insuficiente → subir
+    else        hi = mid;   // pago excesivo     → bajar
+  }
+  return (lo + hi) / 2;
+}
+
+// ─────────────────────────────────────────────
+//  montoDeCapacidad — inversa exacta de calcPago
+//  Dado un pago mensual disponible, ¿cuánto puede prestar?
+// ─────────────────────────────────────────────
+function montoDeCapacidad(pagoDisp, tasaAnual, n) {
+  if (pagoDisp <= 0 || n <= 0) return 0;
+  // Bisección sobre montos
+  let lo = 0, hi = pagoDisp * n;
+  for (let i = 0; i < 60; i++) {
+    const mid = (lo + hi) / 2;
+    const p   = calcPago(mid, tasaAnual, n);
+    if (Math.abs(p - pagoDisp) < 0.01) return mid;
+    if (p < pagoDisp) lo = mid;
+    else              hi = mid;
+  }
+  return (lo + hi) / 2;
+}
+
+// ══════════════════════════════════════════════
+//  SLIDER SYNC
+// ══════════════════════════════════════════════
+function syncSlider() {
+  const v = parseFloat(document.getElementById('monto').value) || 1000;
+  const slider = document.getElementById('sliderMonto');
+  slider.value = Math.min(Math.max(v, 1000), 500000);
+  updateSliderStyle(slider);
+  calcular();
+}
+function syncMonto() {
+  const slider = document.getElementById('sliderMonto');
+  document.getElementById('monto').value = slider.value;
+  updateSliderStyle(slider);
+  calcular();
+}
+function updateSliderStyle(slider) {
+  const min = parseFloat(slider.min), max = parseFloat(slider.max), val = parseFloat(slider.value);
+  const pct = ((val - min) / (max - min)) * 100;
+  slider.style.setProperty('--pct', pct + '%');
+}
+
+// ══════════════════════════════════════════════
+//  CALCULAR
+// ══════════════════════════════════════════════
+function calcular() {
+  const monto = parseFloat(document.getElementById('monto').value);
+  const plazo = parseInt(document.getElementById('plazo').value);
+  const tipo = document.getElementById('tipo').value;
+  const capacidad = parseFloat(document.getElementById('capacidad').value) || 0;
+  const saldoOtra = parseFloat(document.getElementById('saldoOtra').value) || 0;
+  const nombre = document.getElementById('nombre').value || 'PENSIONADO';
+  const ejecutivo = document.getElementById('ejecutivo').value || 'EJECUTIVO RANMA';
+
+  // Validaciones
+  let hasError = false;
+  const fMonto = document.getElementById('field-monto');
+  const fPlazo = document.getElementById('field-plazo');
+  fMonto.classList.remove('error');
+  fPlazo.classList.remove('error');
+
+  if (!monto || monto < 1000) { fMonto.classList.add('error'); hasError = true; }
+  if (!plazo) { fPlazo.classList.add('error'); hasError = true; }
+
+  if (hasError || !monto || !plazo) return;
+
+  const { tasa, cat } = CATALOGO[tipo][plazo];
+  const pago = calcPago(monto, tasa, plazo);
+  // Intereses diarios: convención año comercial 360 días (= tasa/12/30)
+  const intDiarios = monto * tasa / 360;
+  const totalPagar = pago * plazo;
+  // Costo total = todo lo pagado menos el capital devuelto
+  const totalInt = totalPagar - monto;
+
+  // VIDA MÁS: cuota fija Consubanco/GNP
+  const vidaPrima = 400;
+  document.getElementById('vidaCosto').textContent = fmt(vidaPrima) + ' / mes';
+  document.getElementById('vidaNote').textContent = 'Cuota fija mensual · Seguro Vida + GNP';
+
+  // Resultados
+  document.getElementById('resultSection').style.display = 'block';
+  document.getElementById('resFecha').textContent = fmtDate();
+  document.getElementById('resNombre').textContent = nombre.toUpperCase();
+  document.getElementById('resEjecutivo').textContent = ejecutivo.toUpperCase();
+  document.getElementById('resIntDiarios').textContent = fmt(intDiarios);
+  document.getElementById('resTasa').textContent = fmtPct(tasa) + ' anual';
+  document.getElementById('resCAT').textContent = fmtPct(cat) + ' SIPRE';
+
+  // Grid resultados
+  const pagoConSeguro = pago + vidaPrima;
+  const grid = document.getElementById('resultGrid');
+  grid.innerHTML = `
+    <div class="result-item highlight">
+      <div class="val">${fmt(pago)}</div>
+      <div class="lbl">Descuento Mensual</div>
+      <div class="sub">Vía nómina · ${plazo} meses</div>
+    </div>
+    <div class="result-item">
+      <div class="val">${fmt(monto)}</div>
+      <div class="lbl">Monto Financiado</div>
+    </div>
+    <div class="result-item">
+      <div class="val">${fmt(totalPagar)}</div>
+      <div class="lbl">Total a Pagar</div>
+    </div>
+    <div class="result-item">
+      <div class="val">${fmt(totalInt)}</div>
+      <div class="lbl">Total Intereses</div>
+    </div>
+    <div class="result-item highlight" style="grid-column: 1 / -1;">
+      <div class="val">${fmt(pagoConSeguro)}</div>
+      <div class="lbl">Descuento Mensual Total (crédito + Seguro Vida +)</div>
+      <div class="sub">${fmt(pago)} crédito + ${fmt(vidaPrima)} póliza GNP</div>
+    </div>
+  `;
+
+  // Barra capacidad (incluye el Seguro Vida + de $400 en el descuento total vía nómina)
+  if (capacidad > 0) {
+    const pct = Math.min((pagoConSeguro / capacidad) * 100, 100);
+    let cls = 'cap-bar-inner';
+    let msg = '✅ Dentro de la capacidad autorizada';
+    if (pct > 90) { cls += ' danger'; msg = '⚠️ Excede la capacidad disponible'; }
+    else if (pct > 75) { cls += ' warning'; msg = '🔶 Cerca del límite de capacidad'; }
+    document.getElementById('capResumenWrap').innerHTML = `
+      <div class="info-strip">
+        <div class="info-strip-title">📊 Uso de Capacidad</div>
+        <div class="cap-bar-label">
+          <span style="font-size:12px;">${msg}</span>
+          <span style="font-family:'Montserrat',sans-serif;font-weight:700;color:var(--csb-blue-mid);">${pct.toFixed(1)}%</span>
+        </div>
+        <div class="cap-bar-outer"><div class="${cls}" style="width:${pct}%"></div></div>
+        <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:11px;color:var(--muted);">
+          <span>Descuento mensual (crédito + seguro): <strong>${fmt(pagoConSeguro)}</strong></span>
+          <span>Capacidad disponible: <strong>${fmt(capacidad)}</strong></span>
+        </div>
+      </div>`;
+  } else {
+    document.getElementById('capResumenWrap').innerHTML = '';
+  }
+
+  // Saldo otra
+  if (saldoOtra > 0) {
+    document.getElementById('alertSaldoInsoluto').style.display = 'block';
+  } else {
+    document.getElementById('alertSaldoInsoluto').style.display = 'none';
+  }
+
+  // Tabla amortización
+  generarAmort(monto, tasa, plazo, pago);
+
+  // Scroll suave
+  setTimeout(() => document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+}
+
+// ══════════════════════════════════════════════
+//  TABLA DE AMORTIZACIÓN
+//  Cada mes: interés = saldo * tm (tasa nominal mensual SIN IVA)
+//            IVA     = interés * 16%   (solo sobre intereses, no sobre capital)
+//            capital = pago - interés - IVA
+//  Verificación: suma de capital debe ser igual al monto original.
+// ══════════════════════════════════════════════
+function generarAmort(monto, tasaAnual, n, pago) {
+  const tm = tasaAnual / 12;   // tasa mensual sin IVA
+  let saldo = monto;
+  let totalInt = 0, totalIva = 0, totalCap = 0;
+  const rows = [];
+
+  for (let i = 1; i <= n; i++) {
+    const interes = saldo * tm;
+    const iva     = interes * IVA;
+    const capital = pago - interes - iva;
+    const saldoFinal = Math.max(saldo - capital, 0);
+    totalInt += interes; totalIva += iva; totalCap += capital;
+    rows.push({ i, saldo, pago, interes, iva, capital, saldoFinal });
+    saldo = saldoFinal;
+  }
+
+  const tbody = document.getElementById('amortBody');
+  tbody.innerHTML = rows.map(r => `
+    <tr>
+      <td>${r.i}</td>
+      <td>${fmt(r.saldo)}</td>
+      <td><strong>${fmt(r.pago)}</strong></td>
+      <td class="td-red">${fmt(r.interes)}</td>
+      <td class="td-red" style="font-size:11px;">${fmt(r.iva)}</td>
+      <td class="td-green">${fmt(r.capital)}</td>
+      <td>${fmt(r.saldoFinal)}</td>
+    </tr>`).join('');
+
+  document.getElementById('amortTotales').innerHTML = `
+    <div class="info-strip" style="padding:10px 14px;">
+      <div style="display:flex;gap:20px;flex-wrap:wrap;font-size:12px;">
+        <div><span style="color:var(--muted);">Total Intereses:</span> <strong style="color:var(--warning);">${fmt(totalInt)}</strong></div>
+        <div><span style="color:var(--muted);">Total IVA s/intereses:</span> <strong style="color:var(--warning);">${fmt(totalIva)}</strong></div>
+        <div><span style="color:var(--muted);">Costo total (int+IVA):</span> <strong style="color:var(--warning);">${fmt(totalInt + totalIva)}</strong></div>
+        <div><span style="color:var(--muted);">Monto Total a Pagar:</span> <strong style="color:var(--csb-blue-mid);font-size:14px;">${fmt(pago * n)}</strong></div>
+      </div>
+      <div style="margin-top:8px;font-size:11px;color:var(--muted);">
+        ✓ Capital amortizado: ${fmt(totalCap)} · Verificación: Capital + Intereses + IVA = ${fmt(totalCap + totalInt + totalIva)}
+      </div>
+    </div>`;
+}
+
+// ══════════════════════════════════════════════
+//  PAGO ANTICIPADO — 4 MODOS + AGUINALDO
+// ══════════════════════════════════════════════
+let modoAnticipo = 'unico';
+
+// Frecuencia de abono según modo
+const FRECUENCIA = { unico: null, mensual: 1, bimestral: 2, trimestral: 3 };
+
+// Etiquetas de cada modo para el resumen
+const MODO_LABEL = {
+  unico:      (a, m) => `Abono único de ${fmt(a)} en el mes ${m}`,
+  mensual:    (a)    => `Abono mensual adicional de ${fmt(a)} (a partir del mes 2)`,
+  bimestral:  (a)    => `Abono bimestral de ${fmt(a)} (meses 2, 4, 6…)`,
+  trimestral: (a)    => `Abono trimestral de ${fmt(a)} (meses 3, 6, 9…)`,
+};
+
+function setModoAnticipo(modo) {
+  modoAnticipo = modo;
+
+  // Botones
+  ['unico','mensual','bimestral','trimestral'].forEach(m => {
+    document.getElementById('btnModo' + m.charAt(0).toUpperCase() + m.slice(1))
+      .classList.toggle('active', m === modo);
+    document.getElementById('explicacion' + m.charAt(0).toUpperCase() + m.slice(1))
+      .style.display = m === modo ? '' : 'none';
+  });
+
+  // Campo "en qué mes" solo para abono único
+  document.getElementById('campoMesAbono').style.display = modo === 'unico' ? '' : 'none';
+
+  // Etiqueta del monto
+  const etiquetas = {
+    unico:      'Monto del abono a capital',
+    mensual:    'Abono mensual adicional a capital',
+    bimestral:  'Abono bimestral a capital',
+    trimestral: 'Abono trimestral a capital',
+  };
+  document.getElementById('labelMontoAbono').textContent = etiquetas[modo];
+
+  // Campo aguinaldo: visible en modos recurrentes
+  document.getElementById('campoAguinaldo').style.display =
+    modo !== 'unico' ? '' : 'none';
+
+  calcularAnticipo();
+}
+
+// ── Determina si este mes aplica abono recurrente ──────────────
+// mensual    → mes 2, 3, 4…   (freq=1, primer abono mes 2)
+// bimestral  → mes 2, 4, 6…   (freq=2, primer abono mes 2)
+// trimestral → mes 3, 6, 9…   (freq=3, primer abono mes 3)
+function aplicaAbono(mes, frecuencia) {
+  if (!frecuencia) return false;
+  const inicio = frecuencia === 1 ? 2 : frecuencia; // mensual empieza en 2, resto en freq
+  if (mes < inicio) return false;
+  return (mes % frecuencia) === 0;
+}
+
+// ── Diciembre: mes 12, 24, 36… del crédito ────────────────────
+function esDiciembre(mes) {
+  return mes % 12 === 0 && mes > 0;
+}
+
+function calcularAnticipo() {
+  const monto     = parseFloat(document.getElementById('monto').value);
+  const plazo     = parseInt(document.getElementById('plazo').value);
+  const tipo      = document.getElementById('tipo').value;
+  const abono     = parseFloat(document.getElementById('anticipoMonto').value) || 0;
+  const mesAbono  = Math.max(parseInt(document.getElementById('mesAbono').value) || 1, 1);
+  const aguinaldo = parseFloat(document.getElementById('aguinaldoMonto').value) || 0;
+
+  const resumenEl = document.getElementById('anticipoResumen');
+  const tablaWrap = document.getElementById('anticipoTablaWrap');
+
+  if (!monto || !plazo || abono <= 0) {
+    resumenEl.innerHTML = '<p style="color:var(--muted);font-size:13px;padding:8px 0;">Ingresa el monto del abono para ver la proyección.</p>';
+    tablaWrap.style.display = 'none';
+    return;
+  }
+
+  const { tasa } = CATALOGO[tipo][plazo];
+  const tm        = tasa / 12;
+  const P         = calcPago(monto, tasa, plazo);
+  const totalBase = P * plazo;
+  const freq      = FRECUENCIA[modoAnticipo];
+
+  // ── Simulación ────────────────────────────────────
+  let saldo = monto, mes = 0, totalPagado = 0;
+  const filas = [];
+
+  while (saldo > 0.01 && mes < plazo) {
+    mes++;
+    const int     = saldo * tm;
+    const iva     = int * IVA;
+    const capBase = P - int - iva;
+    const saldoTrasPago = Math.max(saldo - capBase, 0);
+
+    // Abono recurrente
+    let abonoEste = 0;
+    if (modoAnticipo === 'unico') {
+      if (mes === mesAbono)
+        abonoEste = Math.min(abono, saldoTrasPago);
+    } else {
+      if (aplicaAbono(mes, freq))
+        abonoEste = Math.min(abono, saldoTrasPago);
+    }
+
+    // Aguinaldo en diciembre (mes 12, 24, 36…) — solo en modos recurrentes
+    let aguinaldoEste = 0;
+    if (modoAnticipo !== 'unico' && aguinaldo > 0 && esDiciembre(mes)) {
+      // Se aplica sobre el saldo que queda DESPUÉS del pago base y del abono
+      const saldoTrasAbono = Math.max(saldoTrasPago - abonoEste, 0);
+      aguinaldoEste = Math.min(aguinaldo, saldoTrasAbono);
+    }
+
+    const totalAbonos = abonoEste + aguinaldoEste;
+    const sf = Math.max(saldo - capBase - totalAbonos, 0);
+    totalPagado += P + totalAbonos;
+
+    filas.push({
+      mes, si: saldo, pago: P,
+      abono: abonoEste, aguinaldo: aguinaldoEste,
+      int, iva, cap: capBase, sf,
+      tieneAbono: totalAbonos > 0,
+      esAguinaldo: aguinaldoEste > 0,
+    });
+
+    saldo = sf;
+  }
+
+  const ahorroMeses = plazo - mes;
+  const ahorroMonto = totalBase - totalPagado;
+  const totAbonos   = filas.reduce((s,r) => s + r.abono + r.aguinaldo, 0);
+
+  // ── Resumen ───────────────────────────────────────
+  const labelModo = modoAnticipo === 'unico'
+    ? MODO_LABEL.unico(abono, mesAbono)
+    : MODO_LABEL[modoAnticipo](abono);
+
+  resumenEl.innerHTML = `
+    <div class="info-strip" style="background:linear-gradient(135deg,#e8f5e8,#d4f0d4);border-color:#a8dca8;margin-bottom:0;">
+      <div class="info-strip-title" style="color:var(--success);">💰 ${labelModo}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;">
+        <div class="info-row"><span class="info-key">Plazo original</span><span class="info-val">${plazo} meses</span></div>
+        <div class="info-row"><span class="info-key">Nuevo plazo</span><span class="info-val" style="color:var(--success);font-size:15px;font-weight:800;">${mes} meses</span></div>
+        <div class="info-row"><span class="info-key">Meses ahorrados</span><span class="info-val" style="color:var(--success);">${ahorroMeses} meses</span></div>
+        <div class="info-row"><span class="info-key">Ahorro total</span><span class="info-val" style="color:var(--success);">${fmt(ahorroMonto)}</span></div>
+        <div class="info-row"><span class="info-key">Total sin abono</span><span class="info-val">${fmt(totalBase)}</span></div>
+        <div class="info-row"><span class="info-key">Total con abono</span><span class="info-val" style="color:var(--csb-blue-mid);font-weight:800;">${fmt(totalPagado)}</span></div>
+        ${aguinaldo > 0 && modoAnticipo !== 'unico' ? `
+        <div class="info-row"><span class="info-key">Total abonos extra</span><span class="info-val" style="color:#b85c00;">${fmt(totAbonos)}</span></div>
+        <div class="info-row"><span class="info-key">Aguinaldos aplicados</span><span class="info-val" style="color:#b85c00;">${filas.filter(r=>r.esAguinaldo).length} × ${fmt(aguinaldo)}</span></div>
+        ` : ''}
+      </div>
+    </div>`;
+
+  // ── Tabla integrada ───────────────────────────────
+  tablaWrap.style.display = '';
+
+  document.getElementById('anticipoAmortBody').innerHTML = filas.map(r => {
+    const totalAbono = r.abono + r.aguinaldo;
+    const marcador = r.esAguinaldo ? ' 🎄' : (r.tieneAbono ? ' ⭐' : '');
+    return `<tr class="${r.tieneAbono ? 'tr-abono' : ''}">
+      <td>${r.mes}${marcador}</td>
+      <td>${fmt(r.si)}</td>
+      <td>${fmt(r.pago)}</td>
+      <td style="${totalAbono > 0 ? 'color:#b85c00;font-weight:800;' : 'color:var(--muted);'}">
+        ${totalAbono > 0
+          ? (r.esAguinaldo && r.abono > 0
+              ? `${fmt(r.abono)}<br><span style="font-size:10px;color:#6a3800;">+${fmt(r.aguinaldo)} 🎄</span>`
+              : r.esAguinaldo ? fmt(r.aguinaldo) + ' 🎄' : fmt(r.abono))
+          : '—'}
+      </td>
+      <td class="td-red">${fmt(r.int)}</td>
+      <td class="td-red" style="font-size:11px;">${fmt(r.iva)}</td>
+      <td class="td-green">${fmt(r.cap)}</td>
+      <td>${fmt(r.sf)}</td>
+    </tr>`;
+  }).join('');
+
+  const totInt  = filas.reduce((s,r) => s + r.int, 0);
+  const totIva  = filas.reduce((s,r) => s + r.iva, 0);
+  const totCap  = filas.reduce((s,r) => s + r.cap, 0);
+
+  document.getElementById('anticipoTotales').innerHTML = `
+    <div class="info-strip" style="padding:10px 14px;">
+      <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:12px;">
+        <div><span style="color:var(--muted);">Total Intereses:</span> <strong style="color:var(--warning);">${fmt(totInt)}</strong></div>
+        <div><span style="color:var(--muted);">Total IVA:</span> <strong style="color:var(--warning);">${fmt(totIva)}</strong></div>
+        ${totAbonos > 0 ? `<div><span style="color:var(--muted);">Abonos extra:</span> <strong style="color:#b85c00;">${fmt(totAbonos)}</strong></div>` : ''}
+        <div><span style="color:var(--muted);">Total pagado:</span> <strong style="color:var(--csb-blue-mid);font-size:14px;">${fmt(totalPagado)}</strong></div>
+      </div>
+      <div style="margin-top:6px;font-size:11px;color:var(--muted);">
+        ✓ Capital + Int + IVA + Abonos = ${fmt(totCap + totInt + totIva + totAbonos)}
+      </div>
+    </div>`;
+}
+
+// ══════════════════════════════════════════════
+//  CAPACIDAD MÍNIMA + REGLA 8× PENSIÓN
+// ══════════════════════════════════════════════
+
+// Cuando cambia el campo de pensión: precarga el monto 8×
+// en el cotizador y en la calculadora de capacidad
+function sincronizarPension() {
+  const pension = parseFloat(document.getElementById('pensionMensual').value) || 0;
+  if (pension <= 0) return;
+  const monto8x = Math.floor(pension * 8 / 1000) * 1000; // redondear a miles
+
+  // Precargar en el cotizador principal si está vacío o fue puesto por esta función
+  const campoMonto = document.getElementById('monto');
+  campoMonto.value = monto8x;
+  document.getElementById('sliderMonto').value = Math.min(monto8x, 500000);
+  updateSliderStyle(document.getElementById('sliderMonto'));
+
+  calcularCapMinima();
+  calcular();
+}
+
+function calcularCapMinima() {
+  const capDisp  = parseFloat(document.getElementById('capDisp').value)      || 0;
+  const pension  = parseFloat(document.getElementById('pensionMensual').value) || 0;
+  const plazo    = parseInt(document.getElementById('capPlazo').value);
+  const tipo     = document.getElementById('capTipo').value;
+
+  if (!plazo || (!capDisp && !pension)) {
+    document.getElementById('capMinimaResult').innerHTML = `
+      <div class="empty-state"><div class="big-icon">📐</div>
+      <p>Ingresa la pensión mensual o la<br>capacidad SIPRE para calcular</p></div>`;
+    return;
+  }
+
+  const { tasa } = CATALOGO[tipo][plazo];
+
+  // Monto por capacidad SIPRE/SUAP
+  const montoPorCapacidad = capDisp > 0
+    ? Math.floor(montoDeCapacidad(capDisp, tasa, plazo) / 1000) * 1000
+    : Infinity;
+
+  // Monto por regla 8× pensión
+  const montoPor8x = pension > 0
+    ? Math.floor(pension * 8 / 1000) * 1000
+    : Infinity;
+
+  // El monto real es el menor de los dos límites
+  const montoReal = Math.min(montoPorCapacidad, montoPor8x);
+  if (montoReal === Infinity || montoReal <= 0) {
+    document.getElementById('capMinimaResult').innerHTML = `
+      <div class="empty-state"><div class="big-icon">📐</div>
+      <p>Ingresa al menos un dato para calcular</p></div>`;
+    return;
+  }
+
+  const pagoVerif   = calcPago(montoReal, tasa, plazo);
+  const montoMin    = 1000;
+  const limitante   = montoReal === montoPor8x && montoPor8x <= montoPorCapacidad
+    ? '8× pensión'
+    : 'Capacidad SIPRE';
+
+  document.getElementById('capMinimaResult').innerHTML = `
+    <div style="text-align:center;padding:10px 0 4px;">
+      <div style="font-family:'Montserrat',sans-serif;font-size:30px;font-weight:800;color:var(--csb-blue-mid);">${fmt(montoReal)}</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:2px;">Monto máximo prestable</div>
+      <div style="font-size:11px;margin-top:4px;">
+        <span class="badge badge-${limitante==='8× pensión'?'orange':'blue'}" style="font-size:10px;">
+          Límite: ${limitante}
+        </span>
+      </div>
+    </div>
+    <div class="info-strip" style="margin-top:10px;">
+      ${pension > 0    ? `<div class="info-row"><span class="info-key">Pensión mensual</span><span class="info-val">${fmt(pension)}</span></div>` : ''}
+      ${pension > 0    ? `<div class="info-row"><span class="info-key">8× pensión</span><span class="info-val">${fmt(montoPor8x)}</span></div>` : ''}
+      ${capDisp > 0    ? `<div class="info-row"><span class="info-key">Capacidad SIPRE</span><span class="info-val">${fmt(capDisp)}/mes</span></div>` : ''}
+      ${capDisp > 0    ? `<div class="info-row"><span class="info-key">Por capacidad</span><span class="info-val">${fmt(montoPorCapacidad === Infinity ? 0 : montoPorCapacidad)}</span></div>` : ''}
+      <div class="info-row"><span class="info-key">Plazo</span><span class="info-val">${plazo} meses</span></div>
+      <div class="info-row"><span class="info-key">Tasa nominal</span><span class="info-val">2.65% mensual · 31.89% anual</span></div>
+      <div class="info-row"><span class="info-key">Pago mensual</span><span class="info-val" style="color:var(--success);font-weight:800;">${fmt(pagoVerif)}</span></div>
+      ${montoReal < montoMin ? `<div style="margin-top:8px;padding:8px;background:#fff3f0;border-radius:6px;font-size:12px;color:var(--warning);font-weight:600;">⚠️ Monto muy bajo para cotizar</div>` : ''}
+    </div>`;
+}
+
+// ══════════════════════════════════════════════
+//  CATÁLOGO VISUAL
+//  Tasa única Más Nómina: 2.65% mensual / 31.89% anual / CAT 43.96%
+// ══════════════════════════════════════════════
+function renderCatalogo() {
+  const plazos = [12, 24, 36, 48, 60];
+  let html = '';
+  plazos.forEach(p => {
+    html += `<tr>
+      <td style="text-align:left;font-size:11px;color:var(--muted);">Más Nómina</td>
+      <td>${p} m</td>
+      <td style="font-weight:700;color:var(--csb-blue-mid);">2.65% men · 31.89% anual</td>
+      <td style="color:var(--csb-orange);font-weight:700;">43.96%</td>
+    </tr>`;
+  });
+  document.getElementById('catalogoBody').innerHTML = html;
+}
+
+// ══════════════════════════════════════════════
+//  TABS
+// ══════════════════════════════════════════════
+function showTab(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ══════════════════════════════════════════════
+//  LIMPIAR
+// ══════════════════════════════════════════════
+function limpiar() {
+  ['monto','capacidad','saldoOtra','nombre','anticipoMonto','mesAbono',
+   'aguinaldoMonto','pensionMensual','capDisp'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('plazo').value    = '60';
+  document.getElementById('tipo').value     = 'nuevo';
+  document.getElementById('ejecutivo').value = 'EJECUTIVO RANMA';
+  document.getElementById('mesAbono').value  = '1';
+  document.getElementById('anticipoResumen').innerHTML = '';
+  document.getElementById('anticipoTablaWrap').style.display = 'none';
+  document.getElementById('resultSection').style.display     = 'none';
+  document.getElementById('capMinimaResult').innerHTML = `
+    <div class="empty-state"><div class="big-icon">📐</div>
+    <p>Ingresa la pensión mensual o la<br>capacidad SIPRE para calcular</p></div>`;
+  document.getElementById('vidaCosto').textContent = '$400.00 / mes';
+  document.getElementById('vidaNote').textContent  = 'Cuota fija mensual · Seguro Vida + GNP';
+  document.getElementById('sliderMonto').value = 50000;
+  updateSliderStyle(document.getElementById('sliderMonto'));
+  document.querySelectorAll('.field').forEach(f => f.classList.remove('error'));
+  setModoAnticipo('unico');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ══════════════════════════════════════════════
+//  EXPORTACIÓN
+// ══════════════════════════════════════════════
+
+// ── Datos compartidos de encabezado ───────────
+function _metaDatos() {
+  return {
+    cliente:   document.getElementById('resNombre').textContent   || '—',
+    ejecutivo: document.getElementById('resEjecutivo').textContent || '—',
+    fecha:     document.getElementById('resFecha').textContent    || '—',
+    tasa:      document.getElementById('resTasa').textContent     || '—',
+    cat:       document.getElementById('resCAT').textContent      || '—',
+  };
+}
+
+// ── Extrae filas de una tabla HTML → array de arrays ──────────
+// tablaOWrapperId: puede ser el id de un <table> o de un div que contiene <table>
+function _filasDeTabla(tbodyId, tablaOWrapperId) {
+  const contenedor = document.getElementById(tablaOWrapperId);
+  const tbody      = document.getElementById(tbodyId);
+  if (!tbody || !contenedor) return [];
+
+  // thead puede estar en el contenedor (si es un <table>) o dentro de él
+  const theadRow = contenedor.tagName === 'TABLE'
+    ? contenedor.querySelector('thead tr')
+    : contenedor.querySelector('thead tr');
+
+  const limpiar = (txt, isFirst) => {
+    if (isFirst) return txt.trim(); // columna # siempre texto
+    const s = txt.replace(/[\u2600-\u27BF]|\uD83C[\uDF00-\uDFFF]|\uD83D[\uDC00-\uDE4F]/gu, '')
+                 .replace(/^\$/, '').replace(/,/g, '').trim();
+    const n = parseFloat(s);
+    return isNaN(n) ? txt.trim() : n;
+  };
+
+  const rows = [];
+
+  if (theadRow) {
+    rows.push(Array.from(theadRow.querySelectorAll('th')).map(th => th.innerText.trim()));
+  }
+
+  tbody.querySelectorAll('tr').forEach(tr => {
+    rows.push(Array.from(tr.querySelectorAll('td')).map((td, i) => {
+      const raw = td.innerText.split('\n')[0].trim();
+      return limpiar(raw, i === 0);
+    }));
+  });
+
+  return rows;
+}
+
+// ── 1. CSV ─────────────────────────────────────
+function exportarCSV(modo) {
+  const esAnticipo = modo === 'anticipo';
+  const tbodyId  = esAnticipo ? 'anticipoAmortBody' : 'amortBody';
+  const tablaId  = esAnticipo ? 'anticipoTablaWrap'  : 'tabAmort';
+  const filas    = _filasDeTabla(tbodyId, esAnticipo ? 'anticipoTablaWrap' : 'amortTable');
+  const meta     = _metaDatos();
+  const modo_txt = esAnticipo ? 'Con Abono Anticipado' : 'Sin Abono';
+
+  const encabezadoMeta = [
+    ['TABLA DE AMORTIZACIÓN — CONSUBANCO / RANMA'],
+    [`Cliente: ${meta.cliente}`, `Ejecutivo: ${meta.ejecutivo}`],
+    [`Fecha: ${meta.fecha}`, `Tasa: ${meta.tasa}`, `CAT (SIPRE): ${meta.cat}`],
+    [`Tipo: ${modo_txt}`],
+    [],
+  ];
+
+  const todasFilas = [
+    ...encabezadoMeta,
+    ..._filasDeTabla(tbodyId, esAnticipo ? 'anticipoTablaWrap' : 'amortTable'),
+  ];
+
+  const csv = todasFilas.map(r =>
+    r.map(v => (typeof v === 'string' && v.includes(',')) ? `"${v}"` : v).join(',')
+  ).join('\r\n');
+
+  const bom   = '\uFEFF'; // UTF-8 BOM para que Excel abra bien los acentos
+  const blob  = new Blob([bom + csv], { type: 'text/csv;charset=utf-8;' });
+  const url   = URL.createObjectURL(blob);
+  const a     = document.createElement('a');
+  a.href      = url;
+  a.download  = `Amortizacion_${meta.cliente.replace(/\s+/g,'_')}_${modo_txt.replace(/\s+/g,'_')}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ── 2. Excel (XLSX) ────────────────────────────
+function exportarXLSX(modo) {
+  const esAnticipo = modo === 'anticipo';
+  const tbodyId    = esAnticipo ? 'anticipoAmortBody' : 'amortBody';
+  const meta       = _metaDatos();
+  const modo_txt   = esAnticipo ? 'Con Abono' : 'Sin Abono';
+
+  const wb = XLSX.utils.book_new();
+
+  // Hoja 1 — Portada con datos generales
+  const portadaData = [
+    ['TABLA DE AMORTIZACIÓN'],
+    ['Consubanco · RANMA Protección Integral · Ley 73'],
+    [],
+    ['Cliente',   meta.cliente],
+    ['Ejecutivo', meta.ejecutivo],
+    ['Fecha',     meta.fecha],
+    ['Tasa nominal', meta.tasa],
+    ['CAT c/IVA (SIPRE)', meta.cat],
+    ['Modalidad', modo_txt],
+    ['Sin comisión por apertura', 'Sí'],
+    ['Sin buró de crédito', 'Sí'],
+  ];
+  const wsPortada = XLSX.utils.aoa_to_sheet(portadaData);
+  wsPortada['!cols'] = [{ wch: 28 }, { wch: 32 }];
+  XLSX.utils.book_append_sheet(wb, wsPortada, 'Datos Generales');
+
+  // Hoja 2 — Tabla de amortización
+  const filas = _filasDeTabla(tbodyId, esAnticipo ? 'anticipoTablaWrap' : 'amortTable');
+  if (filas.length > 0) {
+    const wsAmort = XLSX.utils.aoa_to_sheet(filas);
+    // Anchos de columna
+    const ncols = filas[0].length;
+    wsAmort['!cols'] = Array(ncols).fill({ wch: 16 });
+    wsAmort['!cols'][0] = { wch: 6 };
+    XLSX.utils.book_append_sheet(wb, wsAmort, modo_txt);
+  }
+
+  const nombre = `Amortizacion_${meta.cliente.replace(/\s+/g,'_')}_${modo_txt.replace(/\s+/g,'_')}.xlsx`;
+  XLSX.writeFile(wb, nombre);
+}
+
+// ── 3. PDF / Imprimir ──────────────────────────
+function exportarPDF(modo) {
+  const esAnticipo = modo === 'anticipo';
+  const meta       = _metaDatos();
+  const modo_txt   = esAnticipo ? 'Con Abono Anticipado' : 'Sin Abono Extra';
+
+  // ── Obtener la tabla correcta ──────────────────────────────
+  const tablaEl = esAnticipo
+    ? document.querySelector('#anticipoTablaWrap table')
+    : document.getElementById('amortTable');
+
+  const totalesEl = esAnticipo
+    ? document.getElementById('anticipoTotales')
+    : document.getElementById('amortTotales');
+
+  if (!tablaEl || !tablaEl.querySelector('tbody tr')) {
+    alert('Primero genera una cotización para poder imprimir la tabla.');
+    return;
+  }
+
+  // ── Clonar la tabla limpiando emojis de las celdas ────────
+  const tablaClone = tablaEl.cloneNode(true);
+  tablaClone.querySelectorAll('td:first-child').forEach(td => {
+    td.textContent = td.textContent.replace(/[⭐🎄]/g, '').trim();
+  });
+
+  // ── Obtener totales como texto plano ──────────────────────
+  const totalesHTML = totalesEl ? totalesEl.innerHTML : '';
+
+  // ── Construir HTML de la ventana de impresión ─────────────
+  const html = `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Tabla de Amortización · ${meta.cliente}</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      font-size: 10.5pt;
+      color: #1a2233;
+      background: white;
+      padding: 18mm 15mm 18mm 15mm;
+    }
+
+    /* ── ENCABEZADO ── */
+    .encabezado {
+      border-bottom: 3px solid #1a3e6e;
+      padding-bottom: 10px;
+      margin-bottom: 14px;
+    }
+    .enc-titulo {
+      font-size: 16pt;
+      font-weight: 800;
+      color: #1a3e6e;
+      letter-spacing: -0.3px;
+    }
+    .enc-sub {
+      font-size: 9pt;
+      color: #6b7a8d;
+      margin-top: 3px;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+    }
+    .enc-datos {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 28px;
+      margin-top: 10px;
+      font-size: 9pt;
+    }
+    .enc-datos span strong { color: #1a3e6e; }
+    .enc-badge {
+      display: inline-block;
+      background: #f0f6ff;
+      border: 1px solid #c8daf4;
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-size: 8pt;
+      font-weight: 700;
+      color: #2358a0;
+      margin-top: 8px;
+    }
+
+    /* ── TABLA ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 9.5pt;
+    }
+    thead th {
+      background: #1a3e6e;
+      color: white;
+      padding: 7px 9px;
+      text-align: right;
+      font-weight: 700;
+      font-size: 8.5pt;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    thead th:first-child { text-align: center; }
+    tbody tr:nth-child(even) td { background: #f4f8ff; }
+    tbody tr.tr-abono td { background: #fffbe6 !important; font-weight: 700; }
+    td {
+      padding: 5px 9px;
+      text-align: right;
+      border-bottom: 1px solid #e8edf5;
+      font-size: 9.5pt;
+    }
+    td:first-child { text-align: center; font-weight: 700; color: #2358a0; }
+    .td-red { color: #c75000; }
+    .td-green { color: #2a7a4e; font-weight: 700; }
+
+    /* ── TOTALES ── */
+    .totales-wrap {
+      margin-top: 12px;
+      background: #f4f8ff;
+      border: 1px solid #d1dde9;
+      border-radius: 6px;
+      padding: 9px 14px;
+      font-size: 9pt;
+    }
+    .totales-wrap .t-row {
+      display: inline-block;
+      margin-right: 24px;
+      margin-bottom: 3px;
+    }
+    .totales-wrap .t-lbl { color: #6b7a8d; }
+    .totales-wrap .t-val { font-weight: 800; color: #1a3e6e; }
+    .totales-wrap .t-warn { color: #c75000; }
+
+    /* ── PIE ── */
+    .pie {
+      margin-top: 18px;
+      padding-top: 8px;
+      border-top: 1px solid #d1dde9;
+      font-size: 8pt;
+      color: #9aabb8;
+      line-height: 1.6;
+    }
+
+    @page { margin: 12mm 12mm; size: A4 portrait; }
+    @media print { body { padding: 0; } }
+  </style>
+</head>
+<body>
+
+  <div class="encabezado">
+    <div class="enc-titulo">Tabla de Amortización</div>
+    <div class="enc-sub">Consubanco &middot; RANMA Protección Integral &middot; Crédito Ley 73 IMSS</div>
+    <div class="enc-datos">
+      <span><strong>Cliente:</strong> ${meta.cliente}</span>
+      <span><strong>Ejecutivo:</strong> ${meta.ejecutivo}</span>
+      <span><strong>Fecha:</strong> ${meta.fecha}</span>
+      <span><strong>Tasa nominal:</strong> ${meta.tasa}</span>
+      <span><strong>CAT c/IVA (SIPRE):</strong> ${meta.cat}</span>
+    </div>
+    <div>
+      <span class="enc-badge">${modo_txt}</span>
+      <span class="enc-badge" style="margin-left:6px;">Sin comisión por apertura</span>
+      <span class="enc-badge" style="margin-left:6px;">Sin buró de crédito</span>
+      <span class="enc-badge" style="margin-left:6px;">Descuento vía nómina IMSS</span>
+    </div>
+  </div>
+
+  ${tablaClone.outerHTML}
+
+  <div class="totales-wrap" id="totalesImpresion"></div>
+
+  <div class="pie">
+    Información con fines de cotización. Cifras aproximadas basadas en los datos ingresados. Todo crédito sujeto a autorización directa por el IMSS.<br>
+    Consubanco &middot; RANMA Protección Integral &middot; Todos los derechos reservados.
+  </div>
+
+  <script>
+    // Esperar a que el DOM esté completamente pintado
+    setTimeout(function() {
+      // Poblar totales desde los datos de la tabla
+      const tbl  = document.querySelector('table');
+      const rows = tbl.querySelectorAll('tbody tr');
+      const fmt  = n => '$' + Number(n).toLocaleString('es-MX', {minimumFractionDigits:2, maximumFractionDigits:2});
+
+      // Detectar índices de columna según cuántas columnas hay
+      const ncols = tbl.querySelector('thead tr').cells.length;
+      // ncols=7: #,SI,Pago,Interés,IVA,Capital,SF  (tabla normal)
+      // ncols=8: #,SI,Pago,Abono,Interés,IVA,Capital,SF  (tabla anticipo)
+      const colInt  = ncols === 8 ? 4 : 3;
+      const colIva  = ncols === 8 ? 5 : 4;
+      const colCap  = ncols === 8 ? 6 : 5;
+      const colAbono = ncols === 8 ? 3 : -1;
+
+      const clean = txt => parseFloat(txt.replace(/[^0-9.-]/g,'')) || 0;
+
+      let totInt=0, totIva=0, totCap=0, totAbono=0, totPago=0;
+      rows.forEach(r => {
+        totInt   += clean(r.cells[colInt]?.innerText  || '0');
+        totIva   += clean(r.cells[colIva]?.innerText  || '0');
+        totCap   += clean(r.cells[colCap]?.innerText  || '0');
+        totPago  += clean(r.cells[2]?.innerText       || '0');
+        if (colAbono > 0) totAbono += clean(r.cells[colAbono]?.innerText || '0');
+      });
+      const totTotal = totPago + totAbono;
+
+      const wrap = document.getElementById('totalesImpresion');
+      wrap.innerHTML =
+        '<span class="t-row"><span class="t-lbl">Total Intereses: </span><span class="t-val t-warn">' + fmt(totInt) + '</span></span>' +
+        '<span class="t-row"><span class="t-lbl">Total IVA s/intereses: </span><span class="t-val t-warn">' + fmt(totIva) + '</span></span>' +
+        (colAbono > 0 && totAbono > 0 ? '<span class="t-row"><span class="t-lbl">Total abonos extra: </span><span class="t-val" style="color:#b85c00;">' + fmt(totAbono) + '</span></span>' : '') +
+        '<span class="t-row"><span class="t-lbl">Capital amortizado: </span><span class="t-val" style="color:#2a7a4e;">' + fmt(totCap) + '</span></span>' +
+        '<span class="t-row" style="border-left:2px solid #c8daf4;padding-left:18px;margin-left:6px;"><span class="t-lbl">Total a pagar: </span><span class="t-val" style="font-size:11pt;">' + fmt(totTotal) + '</span></span>';
+
+      // Lanzar diálogo de impresión/PDF una vez que los totales estén en el DOM
+      window.print();
+    }, 400);
+  <\/script>
+</body>
+</html>`;
+
+  // ── Abrir ventana y escribir HTML ─────────────────────────
+  const win = window.open('', '_blank', 'width=900,height=700');
+  if (!win) {
+    alert('Por favor permite ventanas emergentes para este sitio y vuelve a intentarlo.');
+    return;
+  }
+  win.document.write(html);
+  win.document.close();
+}
+
+// ══════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════
+renderCatalogo();
+updateSliderStyle(document.getElementById('sliderMonto'));
+</script>
+</body>
+</html>
