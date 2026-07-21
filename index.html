@@ -5,73 +5,97 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora de Crédito para Pensionados IMSS Ley 73</title>
     <meta name="description" content="Calcula en segundos el monto estimado de tu crédito de nómina como pensionado IMSS Ley 73. Asesoría personalizada por WhatsApp.">
-    <!-- Open Graph: para que se vea bien al compartir en Facebook/WhatsApp/TikTok -->
     <meta property="og:title" content="Calculadora de Crédito para Pensionados IMSS Ley 73">
     <meta property="og:description" content="Descubre en segundos tu monto estimado de crédito. Sin aval, con descuento directo de tu pensión.">
     <meta property="og:type" content="website">
     <style>
         :root {
-            --primary-color: #0b2343;
-            --secondary-color: #1a4473;
-            --accent-color: #25d366;
-            --text-color: #333333;
-            --bg-color: #f4f7f9;
+            --navy-dark: #0e2244;
+            --navy: #1b355d;
+            --navy-light: #26436e;
+            --orange: #d14c0a;
+            --orange-dark: #b23f08;
+            --text-color: #2b2f36;
+            --bg-color: #eef1f5;
             --error-color: #dc2626;
+            --whatsapp: #25d366;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
         }
 
         body {
-            background-color: var(--bg-color);
+            background: linear-gradient(160deg, #eef1f5 0%, #dfe5ec 100%);
             color: var(--text-color);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            padding: 15px;
+            padding: 20px;
         }
 
         .calculator-card {
             background: #ffffff;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-radius: 18px;
+            box-shadow: 0 20px 45px rgba(14, 34, 68, 0.18);
             width: 100%;
             max-width: 480px;
-            padding: 25px;
-            border-top: 8px solid var(--primary-color);
+            overflow: hidden;
         }
 
-        .header {
+        .brand-header {
+            background: linear-gradient(135deg, var(--navy-dark), var(--navy) 60%, var(--navy-light));
+            padding: 28px 25px 22px;
             text-align: center;
-            margin-bottom: 25px;
+            position: relative;
         }
 
-        .header h1 {
-            color: var(--primary-color);
-            font-size: 24px;
-            margin-bottom: 8px;
+        .brand-header::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--orange), #f3a13b);
         }
 
-        .header p {
-            color: #666;
-            font-size: 15px;
+        .brand-header img {
+            height: 42px;
+            margin-bottom: 14px;
+        }
+
+        .brand-header h1 {
+            color: #ffffff;
+            font-size: 21px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            letter-spacing: 0.2px;
+        }
+
+        .brand-header p {
+            color: #cdd9e8;
+            font-size: 14px;
+        }
+
+        .card-body {
+            padding: 28px 25px 25px;
         }
 
         .form-group {
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         label {
             display: block;
             margin-bottom: 10px;
-            font-weight: bold;
-            font-size: 16px;
-            color: var(--secondary-color);
+            font-weight: 600;
+            font-size: 15px;
+            color: var(--navy);
         }
 
         .input-container {
@@ -85,21 +109,24 @@
             left: 15px;
             font-size: 18px;
             font-weight: bold;
-            color: #555;
+            color: var(--navy-light);
         }
 
         input[type="number"] {
             width: 100%;
             padding: 15px 15px 15px 35px;
             font-size: 18px;
-            border: 2px solid #cbd5e1;
-            border-radius: 8px;
+            border: 2px solid #d4dae2;
+            border-radius: 10px;
             outline: none;
-            transition: border-color 0.2s;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background-color: #fafbfc;
         }
 
         input[type="number"]:focus {
-            border-color: var(--secondary-color);
+            border-color: var(--orange);
+            box-shadow: 0 0 0 3px rgba(209, 76, 10, 0.12);
+            background-color: #ffffff;
         }
 
         .error-msg {
@@ -110,32 +137,53 @@
         }
 
         .result-box {
-            background-color: #f8fafc;
+            background: linear-gradient(135deg, #f8fafc, #eef2f7);
             border: 1px solid #e2e8f0;
-            border-radius: 10px;
+            border-left: 5px solid var(--orange);
+            border-radius: 12px;
             padding: 20px;
             text-align: center;
-            margin: 20px 0 25px;
+            margin: 20px 0 24px;
         }
 
         .result-title {
-            font-size: 14px;
+            font-size: 13px;
             text-transform: uppercase;
             letter-spacing: 1px;
             color: #64748b;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
+            font-weight: 600;
         }
 
         .result-amount {
-            font-size: 32px;
-            font-weight: bold;
-            color: var(--primary-color);
+            font-size: 34px;
+            font-weight: 700;
+            color: var(--navy-dark);
         }
 
         .result-note {
             font-size: 12px;
             color: #94a3b8;
             margin-top: 8px;
+            line-height: 1.4;
+        }
+
+        .benefits {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 22px;
+        }
+
+        .benefit-pill {
+            background-color: #fdf1ea;
+            color: var(--orange-dark);
+            font-size: 12px;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid #f3d9c6;
         }
 
         .btn-whatsapp {
@@ -143,15 +191,15 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-            background-color: var(--accent-color);
+            background-color: var(--whatsapp);
             color: white;
             text-decoration: none;
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: bold;
-            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
-            transition: transform 0.2s, background-color 0.2s;
+            padding: 16px;
+            border-radius: 10px;
+            font-size: 17px;
+            font-weight: 700;
+            box-shadow: 0 6px 16px rgba(37, 211, 102, 0.3);
+            transition: transform 0.15s, background-color 0.2s;
         }
 
         .btn-whatsapp:active {
@@ -161,52 +209,56 @@
 
         .footer-text {
             text-align: center;
-            font-size: 12px;
+            font-size: 11px;
             color: #94a3b8;
-            margin-top: 15px;
+            margin-top: 16px;
+            line-height: 1.4;
         }
     </style>
 </head>
 <body>
 
 <div class="calculator-card">
-    <div class="header">
+    <div class="brand-header">
+        <img src="data:image/png;base64,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" alt="Consubanco">
         <h1>Calculadora de Crédito</h1>
         <p>Exclusivo para Pensionados IMSS Ley 73</p>
     </div>
 
-    <div class="form-group">
-        <label for="pension">¿De cuánto es tu pensión mensual aprox.?</label>
-        <div class="input-container">
-            <span class="currency-symbol">$</span>
-            <input type="number" id="pension" placeholder="Ej. 10000" min="0" max="200000" inputmode="numeric" oninput="calcularCredito()">
+    <div class="card-body">
+        <div class="form-group">
+            <label for="pension">¿De cuánto es tu pensión mensual aprox.?</label>
+            <div class="input-container">
+                <span class="currency-symbol">$</span>
+                <input type="number" id="pension" placeholder="Ej. 10000" min="0" max="200000" inputmode="numeric" oninput="calcularCredito()">
+            </div>
+            <div class="error-msg" id="error-msg"></div>
         </div>
-        <div class="error-msg" id="error-msg"></div>
+
+        <div class="result-box">
+            <div class="result-title">Monto Estimado de Crédito</div>
+            <div class="result-amount" id="monto-resultado">$0.00</div>
+            <div class="result-note">Monto de referencia (hasta 8 veces tu pensión). El monto final varía según tu capacidad de descuento y evaluación de crédito.</div>
+        </div>
+
+        <div class="benefits">
+            <span class="benefit-pill">Sin aval</span>
+            <span class="benefit-pill">Sin buró de crédito</span>
+            <span class="benefit-pill">Descuento directo de tu pensión</span>
+        </div>
+
+        <a href="#" id="wa-link" class="btn-whatsapp" target="_blank" rel="noopener">
+            💬 Solicitar este Monto por WhatsApp
+        </a>
+
+        <p class="footer-text">*Monto estimado sujeto a evaluación de capacidad de descuento y aprobación de crédito. No constituye una oferta vinculante.</p>
     </div>
-
-    <div class="result-box">
-        <div class="result-title">Monto Estimado de Crédito</div>
-        <div class="result-amount" id="monto-resultado">$0.00</div>
-        <div class="result-note">Monto de referencia (hasta 8 veces tu pensión). El monto final varía según tu capacidad de descuento y evaluación de crédito.</div>
-    </div>
-
-    <a href="#" id="wa-link" class="btn-whatsapp" target="_blank" rel="noopener">
-        💬 Solicitar este Monto por WhatsApp
-    </a>
-
-    <p class="footer-text">*Monto estimado sujeto a evaluación de capacidad de descuento y aprobación de crédito. No constituye una oferta vinculante.</p>
 </div>
 
 <script>
-    // Número oficial en formato internacional completo (52 + 10 dígitos) para que wa.me funcione siempre
     const TELEFONO_OFICIAL = "5215653999251";
-
-    // --- Multiplicador simplificado para mostrar al cliente ---
-    // El monto real depende de la capacidad de descuento (tasa, plazo y % máximo autorizado),
-    // pero aquí se usa un multiplicador fijo de 8x como referencia rápida y fácil de comunicar.
     const MULTIPLICADOR_ESTIMADO = 8;
-
-    const PENSION_MAX = 200000; // Tope razonable para evitar montos absurdos
+    const PENSION_MAX = 200000;
 
     function calcularCredito() {
         const input = document.getElementById('pension');
